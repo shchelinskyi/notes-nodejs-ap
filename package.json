@@ -1,0 +1,36 @@
+{
+  "name": "notes-nodejs-app",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "start": "npm run build && node build/main",
+    "build": "rimraf ./build && npx tsc",
+    "dev": "npx nodemon",
+    "lint": "npx eslint ./src",
+    "format": "npx eslint ./src --fix"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/body-parser": "^1.19.2",
+    "@types/cors": "^2.8.13",
+    "@types/express": "^4.17.17",
+    "@types/yup": "^0.32.0",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "joi": "^17.9.2",
+    "yup": "^1.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.4.5",
+    "@typescript-eslint/eslint-plugin": "^6.2.0",
+    "@typescript-eslint/parser": "^6.2.0",
+    "eslint": "^8.46.0",
+    "nodemon": "^3.0.1",
+    "rimraf": "^5.0.1",
+    "typescript": "^5.1.6"
+  }
+}
