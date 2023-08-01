@@ -1,11 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import Joi, { ValidationErrorItem } from 'joi';
-import { INote } from '../interfaces.ts';
+import {INoteCreate} from '../interfaces.js';
 
-const noteSchema: Joi.ObjectSchema<INote > = Joi.object({
-    id: Joi.number().required(),
+const noteSchema: Joi.ObjectSchema<INoteCreate > = Joi.object({
     nameValue: Joi.string().required(),
-    formattedDate: Joi.string().required(),
     categoryValue: Joi.string().valid('Task', 'Idea', 'Random Thought').required(),
     contentValue: Joi.string().required(),
     datesValue: Joi.string().allow(''),

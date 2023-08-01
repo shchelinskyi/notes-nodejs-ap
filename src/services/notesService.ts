@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { INote } from '../interfaces.ts';
-import { notesRepository } from '../repositories/notesRepository.ts';
+import { INote } from '../interfaces.js';
+import { notesRepository } from '../repositories/notesRepository.js';
 
 export const createNote = (req: Request, res: Response): void => {
     const note: INote = req.body;
@@ -17,7 +17,6 @@ export const deleteNote = (req: Request, res: Response): void => {
 export const editNote = (req: Request, res: Response): void => {
     const { id } = req.params;
     const updatedNote = notesRepository.update(id, req.body);
-    console.log(updatedNote);
 
     res.json(updatedNote);
 };

@@ -16,3 +16,12 @@ export interface INoteStats {
     ideaActive: number,
     ideaArchived: number,
 }
+
+
+export interface INoteCreate {
+    nameValue: string,
+    categoryValue: string,
+    contentValue: string,
+    datesValue: string,
+    archived: boolean
+}

@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "allowImportingTsExtensions": true,
     "target": "ES2018",
     "lib": ["ES6"],
     "module": "NodeNext",
@@ -23,4 +22,3 @@
     "esm": true
   }
 }
-

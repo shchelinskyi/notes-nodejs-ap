@@ -1,4 +1,5 @@
-import { INote, INoteStats } from '../interfaces.ts';
+import {INote, INoteCreate, INoteStats} from '../interfaces.js';
+import setDataFormat from "../helpers/setDataFormat.js";
 
 let notes: INote[] = [
     {
@@ -67,8 +68,24 @@ let notes: INote[] = [
 ];
 
 export const notesRepository = {
-    create: (note: INote): INote => {
-        const newNote: INote = { ...note, id: Date.now() };
+    create: (note: INoteCreate): INote => {
+        const formattedDate = setDataFormat();
+        const {
+            nameValue,
+            categoryValue,
+            contentValue,
+            datesValue,
+            archived
+        } = note;
+        const newNote: INote = {
+            id: Date.now(),
+            nameValue,
+            formattedDate,
+            categoryValue,
+            contentValue,
+            datesValue,
+            archived
+        };
         notes.push(newNote);
         return newNote;
     },
