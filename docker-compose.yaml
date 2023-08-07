@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+  node-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "3004:3004"
+  #   depends_on:
+  #     - postgres
+
+  # postgres:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.postgres
+  #   environment:
+  #     POSTGRES_PASSWORD: artem7777
+  #     POSTGRES_DB: notes
+  #     POSTGRES_USER: artem
+  #   ports:
+  #     - "5432:5432"

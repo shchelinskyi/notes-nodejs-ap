@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 import { resolve } from 'path';
 dotenv.config();
 const app = express();
-const { PORT } = process.env;
+const { PORT } = process.env || 3004;
 app.use(cors());
 app.use(express.json());
 app.use('/api', notesRoutes);

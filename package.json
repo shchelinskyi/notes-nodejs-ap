@@ -9,6 +9,8 @@
     "dev": "npx nodemon",
     "start": "npm run build && node build/main",
     "build": "rimraf ./build && npx tsc",
+    "dockerUp": "docker-compose up",
+    "dockerDown": "docker-compose down",
     "lint": "npx eslint ./src",
     "format": "npx eslint ./src --fix"
   },
