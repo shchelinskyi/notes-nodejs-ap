@@ -5,15 +5,10 @@ import { validateNote } from '../helpers/validationHelper.js';
 const router = Router();
 
 router.post('/notes', validateNote, createNote);
-
 router.get('/notes/stats', getStats);
-
 router.delete('/notes/:id', deleteNote);
-
 router.patch('/notes/:id', validateNote, editNote);
-
 router.get('/notes/:id', getNote);
-
 router.get('/notes', getNotes);
 
 

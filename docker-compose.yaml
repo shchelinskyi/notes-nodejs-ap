@@ -1,4 +1,4 @@
-version: '3'
+version: '3.5'
 
 services:
   node-app:
@@ -8,16 +8,27 @@ services:
     restart: always
     ports:
       - "3004:3004"
-  #   depends_on:
-  #     - postgres
+    depends_on:
+      - postgres
 
-  # postgres:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile.postgres
-  #   environment:
-  #     POSTGRES_PASSWORD: artem7777
-  #     POSTGRES_DB: notes
-  #     POSTGRES_USER: artem
-  #   ports:
-  #     - "5432:5432"
+  postgres:
+      container_name: pg_db
+      image: postgres
+      environment:
+        POSTGRES_USER: root
+        POSTGRES_PASSWORD: root
+        POSTGRES_DB: my_db
+      volumes:
+        - ./postgres_data:/var/lib/postgresql/data
+      ports:
+        - "5432:5432"
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+    ports:
+      - "5050:80"
+

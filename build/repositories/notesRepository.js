@@ -1,117 +1,132 @@
-import setDataFormat from "../helpers/setDataFormat.js";
-let notes = [
-    {
-        id: 1790743110274,
-        nameValue: "Сook food 05.08.2023 or 07/08/2023",
-        formattedDate: "July 27, 2023",
-        categoryValue: "Idea",
-        contentValue: "Bake a pie",
-        datesValue: "05/08/2023, 07/08/2023",
-        archived: false
-    },
-    {
-        id: 1790743110374,
-        nameValue: "Go to the dentist 01/08/2023",
-        formattedDate: "July 27, 2023",
-        categoryValue: "Task",
-        contentValue: "Examine teeth",
-        datesValue: "01/08/2023",
-        archived: false
-    },
-    {
-        id: 1790743110554,
-        nameValue: "Read book",
-        formattedDate: "July 27, 2023",
-        categoryValue: "Task",
-        contentValue: "A Smarter Way to Learn JavaScript",
-        datesValue: "",
-        archived: false
-    },
-    {
-        id: 1790743115275,
-        nameValue: "Design a smart home automation system",
-        formattedDate: "July 27, 2023",
-        categoryValue: "Random Thought",
-        contentValue: "Lighting, smart sockets",
-        datesValue: "",
-        archived: true
-    },
-    {
-        id: 1790743110872,
-        nameValue: "Develop mobile App for language learning",
-        formattedDate: "July 27, 2023",
-        categoryValue: "Idea",
-        contentValue: "React Native, MUI",
-        datesValue: "",
-        archived: false
-    },
-    {
-        id: 1790743110444,
-        nameValue: "Prepare presentation",
-        formattedDate: "July 27, 2023",
-        categoryValue: "Task",
-        contentValue: "Must use Canva or PowerPoint",
-        datesValue: "",
-        archived: true
-    },
-    {
-        id: 1790743110171,
-        nameValue: "Complete project report",
-        formattedDate: "July 27, 2023",
-        categoryValue: "Task",
-        contentValue: "Deadline 03.08.2023",
-        datesValue: "03/08/2023",
-        archived: false
-    }
-];
+import setDataFormat from '../helpers/setDataFormat.js';
+import { pool } from './db.js';
 export const notesRepository = {
-    create: (note) => {
-        const formattedDate = setDataFormat();
-        const { nameValue, categoryValue, contentValue, datesValue, archived } = note;
-        const newNote = {
-            id: Date.now(),
-            nameValue,
-            formattedDate,
-            categoryValue,
-            contentValue,
-            datesValue,
-            archived
-        };
-        notes.push(newNote);
-        return newNote;
+    create: async (note) => {
+        try {
+            console.log('Connected to PostgreSQL database');
+            const formattedDate = setDataFormat();
+            const { nameValue, categoryValue, contentValue, datesValue, archived } = note;
+            const newNoteQuery = `
+            INSERT INTO notes (id, nameValue, formattedDate, categoryValue, contentValue, datesValue, archived)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
+            RETURNING *;
+        `;
+            const values = [Date.now(), nameValue, formattedDate, categoryValue, contentValue, datesValue, archived];
+            try {
+                const result = await pool.query(newNoteQuery, values);
+                return result.rows[0];
+            }
+            catch (error) {
+                console.error('Error executing SQL query:', error);
+                throw error;
+            }
+        }
+        catch (error) {
+            console.error('Error connecting to database:', error);
+            throw error;
+        }
     },
-    remove: (id) => {
-        notes = notes.filter((note) => note.id !== Number(id));
+    remove: async (id) => {
+        try {
+            const deleteNoteQuery = `
+            DELETE FROM notes
+            WHERE id = $1;
+        `;
+            const checkNoteValues = [id];
+            const result = await pool.query(deleteNoteQuery, checkNoteValues);
+            return result.rows[0];
+        }
+        catch (error) {
+            console.error('Error removing note:', error);
+            throw error;
+        }
     },
-    update: (id, note) => {
-        const index = notes.findIndex((item) => item.id === Number(id));
-        if (index === -1)
-            return null;
-        const updatedNote = { ...notes[index], ...note };
-        notes[index] = updatedNote;
-        return updatedNote;
+    update: async (id, note) => {
+        try {
+            console.log('Connected to PostgreSQL database');
+            const checkNoteQuery = `
+            SELECT id
+            FROM notes
+            WHERE id = $1;
+        `;
+            const checkNoteValues = [id];
+            const checkResult = await pool.query(checkNoteQuery, checkNoteValues);
+            if (checkResult.rows.length === 0) {
+                console.log(`Note with id ${id} does not exist.`);
+                return null;
+            }
+            const { nameValue, categoryValue, contentValue, datesValue, archived } = note;
+            const updateNoteQuery = `
+            UPDATE notes
+            SET nameValue = $1,
+                categoryValue = $2,
+                contentValue = $3,
+                datesValue = $4,
+                archived = $5
+            WHERE id = $6
+            RETURNING *;
+        `;
+            const updateValues = [nameValue, categoryValue, contentValue, datesValue, archived, id];
+            try {
+                const result = await pool.query(updateNoteQuery, updateValues);
+                return result.rows[0];
+            }
+            catch (error) {
+                console.error('Error executing SQL query:', error);
+                throw error;
+            }
+        }
+        catch (error) {
+            console.error('Error connecting to database:', error);
+            throw error;
+        }
     },
-    findById: (id) => {
-        return notes.find((note) => note.id === id) || null;
+    findById: async (id) => {
+        const findNoteQuery = `
+        SELECT * FROM notes
+        WHERE id = $1;
+    `;
+        try {
+            const result = await pool.query(findNoteQuery, [id]);
+            return result.rows[0] || null;
+        }
+        catch (error) {
+            console.error('Error finding note:', error);
+            throw error;
+        }
     },
-    getAll: () => {
-        return [...notes];
+    getAll: async () => {
+        try {
+            console.log('Connected to PostgreSQL database');
+            const result = await pool.query('SELECT * FROM notes');
+            console.log('Query result:', result.rows);
+            return result.rows;
+        }
+        catch (err) {
+            console.error('Error:', err);
+            throw err;
+        }
     },
-    getStats: () => {
-        const taskActive = notes.filter(item => item.categoryValue === 'Task' && !item.archived);
-        const taskArchived = notes.filter(item => item.categoryValue === 'Task' && item.archived);
-        const randomActive = notes.filter(item => item.categoryValue === 'Random Thought' && !item.archived);
-        const randomArchived = notes.filter(item => item.categoryValue === 'Random Thought' && item.archived);
-        const ideaActive = notes.filter(item => item.categoryValue === 'Idea' && !item.archived);
-        const ideaArchived = notes.filter(item => item.categoryValue === 'Idea' && item.archived);
-        return {
-            taskActive: taskActive.length,
-            taskArchived: taskArchived.length,
-            randomActive: randomActive.length,
-            randomArchived: randomArchived.length,
-            ideaActive: ideaActive.length,
-            ideaArchived: ideaArchived.length
-        };
+    getStats: async () => {
+        const getStatsQuery = `
+            SELECT
+                COUNT(*) FILTER (WHERE categoryValue = 'Task' AND NOT archived) AS taskActive,
+                COUNT(*) FILTER (WHERE categoryValue = 'Task' AND archived) AS taskArchived,
+                COUNT(*) FILTER (WHERE categoryValue = 'Random Thought' AND NOT archived) AS randomActive,
+                COUNT(*) FILTER (WHERE categoryValue = 'Random Thought' AND archived) AS randomArchived,
+                COUNT(*) FILTER (WHERE categoryValue = 'Idea' AND NOT archived) AS ideaActive,
+                COUNT(*) FILTER (WHERE categoryValue = 'Idea' AND archived) AS ideaArchived
+            FROM notes;
+        `;
+        try {
+            const result = await pool.query(getStatsQuery);
+            console.log(result);
+            return result.rows[0];
+        }
+        catch (error) {
+            console.error('Error getting statistics:', error);
+            throw error;
+        }
     },
 };
 //# sourceMappingURL=notesRepository.js.map
